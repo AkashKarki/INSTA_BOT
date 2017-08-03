@@ -30,7 +30,6 @@ class Users:
     def get_id(self,user_name):
         
         get_url=(BASE_URL+"users/search?q=%s&access_token=%s")%(user_name,ACCESS_TOKEN)
-        print get_url
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
@@ -46,9 +45,21 @@ class Users:
             print 'Request not successful'
     def show_Info(self,ID):
         
-        get_url=(BASE_URL+"/users/%s/?access_token=%s")%(ID,ACCESS_TOKEN)
-        #print get_url
+        get_url=(BASE_URL+"users/search?q=%s&access_token=%s")%(ID,ACCESS_TOKEN)
+        try:
+            user_info = requests.get(get_url).json()
+        except Exception as e:
+            print "owner object can not be accessed"
         
+        if user_info['meta']['code']==200:
+            if len(user_info['data']):
+                print"\nName:",user_info['data'][0]['full_name']
+                print"\nID:",user_info['data'][0]['id']
+                print"\nProfile_Picture:",user_info['data'][0]['profile_picture']
+            else:
+                print"no data for the user"
+        else:
+            print 'Request not successful'
 
 while(True):
     choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.exit\n"))
@@ -72,7 +83,8 @@ while(True):
         Users_obj=Users()
         ID=Users_obj.get_id(UserName)
         while True:
-            choice_1=int(raw_input("\n1.to show info\n2.to show post\n3.to show comment\n"))
+            choice_1=int(raw_input("\n1.to show " +UserName+ " info\n2.to show " +UserName+  " post\n3.to show "+UserName+ " comment\n"))
             if choice_1==1:
-                Users_obj.show_Info(ID)
-        
+                Users_obj.show_Info(UserName)
+                break
+            elif 
