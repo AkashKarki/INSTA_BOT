@@ -65,6 +65,7 @@ class Users:
             print 'Request not successful'
 
 
+
     def get_post(self,ID):
         get_url=BASE_URL+"users/%s/media/recent/?access_token=%s"%(ID,ACCESS_TOKEN)
         try:
@@ -80,6 +81,39 @@ class Users:
                 print"no data for the user"
         else:
             print 'Request not successful'
+
+
+
+    def get_comments(self,ID):
+
+        get_url=BASE_URL+"users/%s/media/recent/?access_token=%s"%(ID,ACCESS_TOKEN)
+        try:
+            user_info = requests.get(get_url).json()
+        except Exception as e:
+            print "owner object can not be accessed"
+        
+        mediaID1=user_info["data"][0]['id']
+        mediaID2=user_info["data"][1]['id']
+        inp=int(raw_input("\n1.for most recent post\n2.for second most recent post"))
+        if inp==1:
+            get_url=BASE_URL+"media/%s/comments?access_token=%s"%(mediaID1,ACCESS_TOKEN)
+        else:
+            get_url=BASE_URL+"media/%s/comments?access_token=%s"%(mediaID2,ACCESS_TOKEN)
+        
+        try:
+            user_info = requests.get(get_url).json()
+        except Exception as e:
+            print "owner object can not be accessed"
+        
+        if user_info['meta']['code']==200:
+            if len(user_info['data']):
+                for i in range(0,len(user_info['data'])):
+                    print"Comment:",i+1,user_info['data'][i]['text']
+                
+            else:
+                print"no comment on this post"
+        else:
+            print 'Request not successful' 
         
 
 while(True):
@@ -111,4 +145,5 @@ while(True):
             elif choice_1==2:
                 Users_obj.get_post(ID)
                 break
-
+            elif choice_1==3:
+                Users_obj.get_comments(ID)
