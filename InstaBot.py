@@ -21,8 +21,24 @@ class Owner:
             print"\nFollowed_by:",user_info['data']['counts']['followed_by']
         else:
             print"Request not successful"
-        
 
+
+    def recent_media_liked(self):
+        
+        get_url=BASE_URL+"users/self/media/liked?access_token="+ACCESS_TOKEN
+        
+        try:
+            user_info = requests.get(get_url).json()
+        except Exception as e:
+            print "owner object can not be accessed"
+            return None
+        if user_info['meta']['code']==200:
+            if len(user_info["data"]):
+                print (json.dumps(user_info["data"], indent=3))
+            else:
+                print"NO recently liked data"
+        else:
+            print"Request not successful"
 
 
 class Users:
@@ -187,21 +203,27 @@ class Users:
         
 
 while(True):
-    choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.exit\n"))
-    if choice==3:
+    choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.show recent media liked by user\n4.exit\n"))
+    if choice==4:
         exit()
     elif choice==1: #owners comment and post need to be done
         owner_obj=Owner()
         owner_obj.get_self_info()
+    elif choice==3:
+        owner_obj=Owner()
+        owner_obj.recent_media_liked()
     elif choice==2:
         while True:
             print"please select user:"
-            select=int(raw_input("\n1.legenwait4itdary\n2.divyesh.712"))
+            select=int(raw_input("\n1.legenwait4itdary\n2.divyesh.712\n3.shiven.basnet"))
             if select==1:
                 UserName="legenwait4itdary"
                 break
             elif select==2:
                 UserName="divyesh.712"
+                break
+            elif select==3:
+                UserName="shiven.basnet"
                 break
             else:
                 print "wrong input try again"
