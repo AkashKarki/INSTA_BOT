@@ -1,4 +1,5 @@
 import requests
+import json
 from AccessToken import ACCESS_TOKEN
 BASE_URL="https://api.instagram.com/v1/"
 
@@ -43,6 +44,8 @@ class Users:
                 return None
         else:
             print 'Request not successful'
+
+
     def show_Info(self,ID):
         
         get_url=(BASE_URL+"users/search?q=%s&access_token=%s")%(ID,ACCESS_TOKEN)
@@ -61,11 +64,29 @@ class Users:
         else:
             print 'Request not successful'
 
+
+    def get_post(self,ID):
+        get_url=BASE_URL+"users/%s/media/recent/?access_token=%s"%(ID,ACCESS_TOKEN)
+        try:
+            user_info = requests.get(get_url).json()
+        except Exception as e:
+            print "owner object can not be accessed"
+        
+        if user_info['meta']['code']==200:
+            if len(user_info['data']):
+                print(json.dumps(user_info["data"], indent=3))
+                
+            else:
+                print"no data for the user"
+        else:
+            print 'Request not successful'
+        
+
 while(True):
     choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.exit\n"))
     if choice==3:
         exit()
-    elif choice==1:
+    elif choice==1: #owners comment and post need to be done
         owner_obj=Owner()
         owner_obj.get_self_info()
     elif choice==2:
@@ -87,4 +108,7 @@ while(True):
             if choice_1==1:
                 Users_obj.show_Info(UserName)
                 break
-            elif 
+            elif choice_1==2:
+                Users_obj.get_post(ID)
+                break
+
