@@ -12,6 +12,7 @@ class Owner:
             user_info = requests.get(get_url).json()
         except Exception as e:
             print "owner object can not be accessed"
+            return None
         if user_info['meta']['code']==200:
             print"\nName:",user_info['data']['full_name']
             print"\nID:",user_info['data']['id']
@@ -34,7 +35,8 @@ class Users:
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
-            print "owner object can not be accessed"
+            print "object can not be accessed"
+            return None
         
         if user_info['meta']['code']==200:
             if len(user_info['data']):
@@ -52,7 +54,8 @@ class Users:
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
-            print "owner object can not be accessed"
+            print "object can not be accessed"
+            return None
         
         if user_info['meta']['code']==200:
             if len(user_info['data']):
@@ -71,11 +74,78 @@ class Users:
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
-            print "owner object can not be accessed"
-        
+            print "object can not be accessed"
+            return None
+
+        inp=int(raw_input("\n1.to show post with minimum Like\n2.to show post with maximum Like\n3.to show post with perticular caption\n"))
         if user_info['meta']['code']==200:
             if len(user_info['data']):
-                print(json.dumps(user_info["data"], indent=3))
+                if inp==1:
+                    like=9999999
+                    postID=""
+                    
+                    for i in range(0,len(user_info["data"])):
+                        if int(user_info["data"][i]['likes']['count'])<like:
+                            like=int(user_info["data"][i]['likes']['count'])
+                            postID=user_info["data"][i]['id']
+                    get_url=BASE_URL+"media/%s?access_token=%s"%(str(postID),ACCESS_TOKEN)
+                    try:
+                        user_info = requests.get(get_url).json()
+                    except Exception as e:
+                        print "object can not be accessed"
+                        return None
+                    if user_info['meta']['code']==200:
+                        if len(user_info['data']):
+                            print (json.dumps(user_info["data"], indent=3))
+                        else:
+                            print"No post found"
+                            return None
+                    else:
+                        print 'Request not successful'
+                elif inp==2:
+                    like=0
+                    postID=""
+                    
+                    for i in range(0,len(user_info["data"])):
+                        if int(user_info["data"][i]['likes']['count'])>like:
+                            like=int(user_info["data"][i]['likes']['count'])
+                            postID=user_info["data"][i]['id']
+                    get_url=BASE_URL+"media/%s?access_token=%s"%(str(postID),ACCESS_TOKEN)
+                    try:
+                        user_info = requests.get(get_url).json()
+                    except Exception as e:
+                        print "object can not be accessed"
+                        return None
+                    if user_info['meta']['code']==200:
+                        if len(user_info['data']):
+                            print (json.dumps(user_info["data"], indent=3))
+                        else:
+                            print"No post found "
+                            return None
+                    else:
+                        print 'Request not successful'
+                elif inp==3:
+                    cap=raw_input("enter the caption")
+                    postID=list()
+                    for i in range(0,len(user_info["data"])):
+                        if user_info["data"][i]['caption']['text']==cap:
+                            postID.append(user_info["data"][i]['id'])
+                    if  len(postID):
+                        for Id in postID:
+                          get_url=BASE_URL+"media/%s?access_token=%s"%(str(Id),ACCESS_TOKEN)
+                          try:
+                                user_info = requests.get(get_url).json()
+                          except Exception as e:
+                                print "object can not be accessed"
+                                return None
+                    if user_info['meta']['code']==200:
+                        if len(user_info['data']):
+                            print (json.dumps(user_info["data"], indent=3))
+                        else:
+                            print"No post found"
+                            return None
+                    else:
+                        print 'Request not successful'
                 
             else:
                 print"no data for the user"
@@ -138,7 +208,7 @@ while(True):
         Users_obj=Users()
         ID=Users_obj.get_id(UserName)
         while True:
-            choice_1=int(raw_input("\n1.to show " +UserName+ " info\n2.to show " +UserName+  " post\n3.to show "+UserName+ " comment\n"))
+            choice_1=int(raw_input("\n1.to show " +UserName+ " info\n2.to show " +UserName+  " posts\n3.to show "+UserName+ " comments on a post\n"))
             if choice_1==1:
                 Users_obj.show_Info(UserName)
                 break
