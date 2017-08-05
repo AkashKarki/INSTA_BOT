@@ -41,6 +41,24 @@ class Owner:
             print"Request not successful"
 
 
+    def get_post(self):
+        get_url=BASE_URL+"users/self/media/recent/?access_token="+ACCESS_TOKEN
+        try:
+            user_info = requests.get(get_url).json()
+        except Exception as e:
+            print "owner object can not be accessed"
+            return None
+        if user_info['meta']['code']==200:
+            if len(user_info["data"]):
+                print (json.dumps(user_info["data"], indent=3))
+            else:
+                print"NO posts"
+        else:
+            print"Request not successful"
+
+
+
+
 class Users:
     def __init__(self):
         return None
@@ -203,15 +221,21 @@ class Users:
         
 
 while(True):
-    choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.show recent media liked by user\n4.exit\n"))
-    if choice==4:
+    choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.exit\n"))
+    if choice==3:
         exit()
-    elif choice==1: #owners comment and post need to be done
+    elif choice==1:
+        inps=int(raw_input("\n1.to show owner basic info\n2.to show owners posts\n3.show recent media liked by user\n"))
         owner_obj=Owner()
-        owner_obj.get_self_info()
-    elif choice==3:
-        owner_obj=Owner()
-        owner_obj.recent_media_liked()
+        if inps==1:
+            owner_obj.get_self_info()
+        elif inps==2:
+            owner_obj.get_post()
+        elif inps==3:
+            owner_obj.recent_media_liked()
+        else:
+            print"wrong input"
+    
     elif choice==2:
         while True:
             print"please select user:"
