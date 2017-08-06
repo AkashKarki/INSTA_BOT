@@ -203,8 +203,10 @@ class Users:
         inp=int(raw_input("\n1.for comments on most recent post\n2.for comments on second most recent post"))
         if inp==1:
             get_url=BASE_URL+"media/%s/comments?access_token=%s"%(mediaID1,ACCESS_TOKEN)
+            print get_url
         else:
             get_url=BASE_URL+"media/%s/comments?access_token=%s"%(mediaID2,ACCESS_TOKEN)
+            
         
         try:
             user_info = requests.get(get_url).json()
@@ -225,16 +227,35 @@ class Users:
     def like_user_post(self,user_id):
         obj=Users()
         media_id = obj.get_post(user_id)
-        print"***************POSTING LIKE ON MEDIA****************"
-        post_url = BASE_URL+ 'media/%s/likes' % (media_id)
-        payload = {"access_token": ACCESS_TOKEN}
-        post_a_like = requests.post(post_url, payload).json()
-        if post_a_like["meta"]["code"] == 200:
-            print "\nThe post has been Liked.\n"
-        else:
-            print "\nYour like was unsuccessful on the post. Please Try again\n"
+        if media_id!=None:
+            print"***************POSTING LIKE ON MEDIA****************"
+            post_url = BASE_URL+ 'media/%s/likes' % (media_id)
+            payload = {"access_token": ACCESS_TOKEN}
+            post_a_like = requests.post(post_url, payload).json()
+            if post_a_like["meta"]["code"] == 200:
+                print "\nThe post has been Liked.\n"
+            else:
+                print "\nYour like was unsuccessful on the post. Please Try again\n"
         
+        else:
+            print"media ID not found"
 
+
+    def comment_user_post(self,user_id):
+        obj=Users()
+        media_id = obj.get_post(user_id)
+        if media_id!=None:
+            comment=raw_input("Enter the comment you want to post: ")
+            payload = {"access_token": ACCESS_TOKEN, "text" : comment}
+            post_url = BASE_URL+ "media/%s/comments" % (media_id)
+            post_comment = requests.post(post_url, payload).json()
+            if post_comment['meta']['code'] == 200:
+                print "\nSuccessfully added the comment!\n"
+            else:
+                print "\nUnable to add the comment. Please try again!"
+        else:
+            print"media ID not found"
+    
 while(True):
     choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.exit\n"))
     if choice==3:
@@ -269,7 +290,7 @@ while(True):
         Users_obj=Users()
         ID=Users_obj.get_id(UserName)
         while True:
-            choice_1=int(raw_input("\n1.to show " +UserName+ " info\n2.to show " +UserName+  " posts\n3.to show "+UserName+ " comments on a post\n4.to like a post of "+UserName+"\n"))
+            choice_1=int(raw_input("\n1.to show " +UserName+ " info\n2.to show " +UserName+  " posts\n3.to show "+UserName+ " comments on a post\n4.to like a post of "+UserName+"\n5.to comment on a post of"+UserName+"\n"))
             if choice_1==1:
                 Users_obj.show_Info(UserName)
                 break
@@ -281,4 +302,7 @@ while(True):
                 break
             elif choice_1==4:
                 Users_obj.like_user_post(ID)
+                break
+            elif choice_1==5:
+                Users_obj.comment_user_post(ID)
                 break
