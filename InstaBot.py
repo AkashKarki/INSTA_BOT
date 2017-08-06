@@ -111,7 +111,7 @@ class Users:
             print "object can not be accessed"
             return None
 
-        inp=int(raw_input("\n1.to show post with minimum Like\n2.to show post with maximum Like\n3.to show post with perticular caption\n"))
+        inp=int(raw_input("\n1.to show/select post with minimum Like\n2.to show/select post with maximum Like\n3.to show/select post with perticular caption\n"))
         if user_info['meta']['code']==200:
             if len(user_info['data']):
                 if inp==1:
@@ -131,11 +131,13 @@ class Users:
                     if user_info['meta']['code']==200:
                         if len(user_info['data']):
                             print (json.dumps(user_info["data"], indent=3))
+                            return str(postID)
                         else:
                             print"No post found"
                             return None
                     else:
                         print 'Request not successful'
+                        return None
                 elif inp==2:
                     like=0
                     postID=""
@@ -198,7 +200,7 @@ class Users:
         
         mediaID1=user_info["data"][0]['id']
         mediaID2=user_info["data"][1]['id']
-        inp=int(raw_input("\n1.for most recent post\n2.for second most recent post"))
+        inp=int(raw_input("\n1.for comments on most recent post\n2.for comments on second most recent post"))
         if inp==1:
             get_url=BASE_URL+"media/%s/comments?access_token=%s"%(mediaID1,ACCESS_TOKEN)
         else:
@@ -217,7 +219,20 @@ class Users:
             else:
                 print"no comment on this post"
         else:
-            print 'Request not successful' 
+            print 'Request not successful'
+
+
+    def like_user_post(self,user_id):
+        obj=Users()
+        media_id = obj.get_post(user_id)
+        print"***************POSTING LIKE ON MEDIA****************"
+        post_url = BASE_URL+ 'media/%s/likes' % (media_id)
+        payload = {"access_token": ACCESS_TOKEN}
+        post_a_like = requests.post(post_url, payload).json()
+        if post_a_like["meta"]["code"] == 200:
+            print "\nThe post has been Liked.\n"
+        else:
+            print "\nYour like was unsuccessful on the post. Please Try again\n"
         
 
 while(True):
@@ -254,12 +269,16 @@ while(True):
         Users_obj=Users()
         ID=Users_obj.get_id(UserName)
         while True:
-            choice_1=int(raw_input("\n1.to show " +UserName+ " info\n2.to show " +UserName+  " posts\n3.to show "+UserName+ " comments on a post\n"))
+            choice_1=int(raw_input("\n1.to show " +UserName+ " info\n2.to show " +UserName+  " posts\n3.to show "+UserName+ " comments on a post\n4.to like a post of "+UserName+"\n"))
             if choice_1==1:
                 Users_obj.show_Info(UserName)
                 break
             elif choice_1==2:
-                Users_obj.get_post(ID)
+                ids=Users_obj.get_post(ID)
                 break
             elif choice_1==3:
                 Users_obj.get_comments(ID)
+                break
+            elif choice_1==4:
+                Users_obj.like_user_post(ID)
+                break
