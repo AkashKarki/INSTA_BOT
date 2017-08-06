@@ -1,5 +1,7 @@
 import requests
 import json
+import collections
+import operator
 from AccessToken import ACCESS_TOKEN
 BASE_URL="https://api.instagram.com/v1/"
 
@@ -244,6 +246,7 @@ class Users:
     def comment_user_post(self,user_id):
         obj=Users()
         media_id = obj.get_post(user_id)
+        print"***************POSTING COMMENT ON MEDIA****************"
         if media_id!=None:
             comment=raw_input("Enter the comment you want to post: ")
             payload = {"access_token": ACCESS_TOKEN, "text" : comment}
@@ -255,10 +258,52 @@ class Users:
                 print "\nUnable to add the comment. Please try again!"
         else:
             print"media ID not found"
-    
+
+
+
+    def marketing(self,ID):
+        markiting_items=['food','tshits','shoes','coffee','clothes','movies','Music','laptop','technology','car','bike','mobile','pet','LoveTravelling','dog','cat']
+        get_url=BASE_URL+"users/%s/media/recent/?access_token=%s"%(ID,ACCESS_TOKEN)
+        try:
+            user_info = requests.get(get_url).json()
+        except Exception as e:
+            print "object can not be accessed"
+        
+        if user_info['meta']['code']==200:
+            caption_list=list()
+            if len(user_info['data']):
+                for i in range(0,len(user_info['data'])):
+                   cap=user_info["data"][i]['caption']['text']
+                   cap=cap.split('#')
+                   caption_list=caption_list+cap
+                caption_list2=collections.Counter(caption_list)
+                caption_list2=sorted(caption_list2.items(), key=operator.itemgetter(1),reverse=True)
+                i=0
+                fav_list=list()
+                for key in caption_list2:
+                    fav_list.append(key)
+                    i=i+1
+                    if i==5:
+                        break
+                fav_list=dict(fav_list)
+                fav_item=list()
+                for key in fav_list.keys():
+                    fav_item.append(key)
+                caption_list=' '.join(caption_list)
+                caption_list=caption_list.split(' ')
+                for items in caption_list:
+                    if items in markiting_items:
+                        fav_item.append(items)
+                print"*****************prouct that are liked by users are*****************"
+                for items in fav_item:
+                    print"=>",items
+            else:
+                print"NO post found"
+        else:
+            print"Unable to process request code other than 200"
 while(True):
-    choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.exit\n"))
-    if choice==3:
+    choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.Marketing your Product\n4.exit\n"))
+    if choice==4:
         exit()
     elif choice==1:
         inps=int(raw_input("\n1.to show owner basic info\n2.to show owners posts\n3.show recent media liked by user\n"))
@@ -280,9 +325,6 @@ while(True):
                 UserName="legenwait4itdary"
                 break
             elif select==2:
-                UserName="divyesh.712"
-                break
-            elif select==3:
                 UserName="shiven.basnet"
                 break
             else:
@@ -306,3 +348,18 @@ while(True):
             elif choice_1==5:
                 Users_obj.comment_user_post(ID)
                 break
+    elif choice==3:
+            print"please select user to whom you want to market the product:"
+            select=int(raw_input("\n1.legenwait4itdary\n2.shiven.basnet"))
+            if select==1:
+                UserName="legenwait4itdary"
+                
+            elif select==2:
+                UserName="shiven.basnet"
+            
+            else:
+                print "wrong input try again"
+            Users_obj=Users()
+            ID=Users_obj.get_id(UserName)
+            if ID!=None:
+                Users_obj.marketing(ID)
