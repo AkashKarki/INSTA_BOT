@@ -32,15 +32,15 @@ class Owner:
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
-            print "owner object can not be accessed"
+            print "owner object can not be accessed."
             return None
         if user_info['meta']['code']==200:
             if len(user_info["data"]):
                 print (json.dumps(user_info["data"], indent=3))
             else:
-                print"NO recently liked data"
+                print"NO recently liked data."
         else:
-            print"Request not successful"
+            print"Request not successful."
 
 
     def get_post(self):
@@ -48,15 +48,15 @@ class Owner:
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
-            print "owner object can not be accessed"
+            print "Owner object can not be accessed."
             return None
         if user_info['meta']['code']==200:
             if len(user_info["data"]):
                 print (json.dumps(user_info["data"], indent=3))
             else:
-                print"NO posts"
+                print"\nNO posts"
         else:
-            print"Request not successful"
+            print"\nRequest not successful."
 
 
 
@@ -71,17 +71,17 @@ class Users:
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
-            print "object can not be accessed"
+            print "object can not be accessed."
             return None
         
         if user_info['meta']['code']==200:
             if len(user_info['data']):
                 return user_info['data'][0]['id']
             else:
-                print"No user found of this name"
+                print"No user found of this name."
                 return None
         else:
-            print 'Request not successful'
+            print 'Request not successful.'
 
 
     def show_Info(self,ID):
@@ -90,7 +90,7 @@ class Users:
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
-            print "object can not be accessed"
+            print "object can not be accessed."
             return None
         
         if user_info['meta']['code']==200:
@@ -99,9 +99,9 @@ class Users:
                 print"\nID:",user_info['data'][0]['id']
                 print"\nProfile_Picture:",user_info['data'][0]['profile_picture']
             else:
-                print"no data for the user"
+                print"no data for the user."
         else:
-            print 'Request not successful'
+            print 'Request not successful.'
 
 
 
@@ -110,10 +110,10 @@ class Users:
         try:
             user_info = requests.get(get_url).json()
         except Exception as e:
-            print "object can not be accessed"
+            print "object can not be accessed."
             return None
-
-        inp=int(raw_input("\n1.to show/select post with minimum Like\n2.to show/select post with maximum Like\n3.to show/select post with perticular caption\n"))
+        print"\nplease select a criteria for post:"
+        inp=int(raw_input("\n1.to show/select post with minimum Like.\n2.to show/select post with maximum Like.\n3.to show/select post with perticular caption.\nEnter:"))
         if user_info['meta']['code']==200:
             if len(user_info['data']):
                 if inp==1:
@@ -128,17 +128,17 @@ class Users:
                     try:
                         user_info = requests.get(get_url).json()
                     except Exception as e:
-                        print "object can not be accessed"
+                        print "object can not be accessed."
                         return None
                     if user_info['meta']['code']==200:
                         if len(user_info['data']):
                             print (json.dumps(user_info["data"], indent=3))
                             return str(postID)
                         else:
-                            print"No post found"
+                            print"No post found."
                             return None
                     else:
-                        print 'Request not successful'
+                        print 'Request not successful.'
                         return None
                 elif inp==2:
                     like=0
@@ -157,6 +157,7 @@ class Users:
                     if user_info['meta']['code']==200:
                         if len(user_info['data']):
                             print (json.dumps(user_info["data"], indent=3))
+                            return str(postID)
                         else:
                             print"No post found "
                             return None
@@ -168,7 +169,7 @@ class Users:
                     for i in range(0,len(user_info["data"])):
                         if user_info["data"][i]['caption']['text']==cap:
                             postID.append(user_info["data"][i]['id'])
-                    if  len(postID):
+                    if  len(postID)!=0:
                         for Id in postID:
                           get_url=BASE_URL+"media/%s?access_token=%s"%(str(Id),ACCESS_TOKEN)
                           try:
@@ -176,14 +177,18 @@ class Users:
                           except Exception as e:
                                 print "object can not be accessed"
                                 return None
-                    if user_info['meta']['code']==200:
-                        if len(user_info['data']):
-                            print (json.dumps(user_info["data"], indent=3))
+                        if user_info['meta']['code']==200:
+                            if len(user_info['data']):
+                                print (json.dumps(user_info["data"], indent=3))
+                                return str(postID)
+                            else:
+                                print"post has no data"
+                                return None
                         else:
-                            print"No post found"
-                            return None
+                            print 'Request not successful'
                     else:
-                        print 'Request not successful'
+                        print"\nNo post found with caption:",cap
+                        
                 
             else:
                 print"no data for the user"
@@ -202,10 +207,10 @@ class Users:
         
         mediaID1=user_info["data"][0]['id']
         mediaID2=user_info["data"][1]['id']
-        inp=int(raw_input("\n1.for comments on most recent post\n2.for comments on second most recent post"))
+        print"\nplease select a criteria for comment:"
+        inp=int(raw_input("\n1.for comments on most recent post.\n2.for comments on second most recent post.\nEnter:"))
         if inp==1:
             get_url=BASE_URL+"media/%s/comments?access_token=%s"%(mediaID1,ACCESS_TOKEN)
-            print get_url
         else:
             get_url=BASE_URL+"media/%s/comments?access_token=%s"%(mediaID2,ACCESS_TOKEN)
             
@@ -217,6 +222,7 @@ class Users:
         
         if user_info['meta']['code']==200:
             if len(user_info['data']):
+                print"\n********************Comment are*******************"
                 for i in range(0,len(user_info['data'])):
                     print"Comment:",i+1,user_info['data'][i]['text']
                 
@@ -294,19 +300,24 @@ class Users:
                 for items in caption_list:
                     if items in markiting_items:
                         fav_item.append(items)
-                print"*****************prouct that are liked by users are*****************"
+                print"\n\n*****************prouct that are liked by users are*****************"
                 for items in fav_item:
                     print"=>",items
             else:
                 print"NO post found"
         else:
             print"Unable to process request code other than 200"
+
+
+#************************************************START OF MAIN PROGRAM********************************************
+
+print"**********WELCOME TO INSTABOT**********"            
 while(True):
-    choice=int(raw_input("\n1.to show owner info\n2.to show other user info\n3.Marketing your Product\n4.exit\n"))
+    choice=int(raw_input("\n1.to show owner info.\n2.to show other user info.\n3.Marketing your Product.\n4.exit\nEnter:"))
     if choice==4:
         exit()
     elif choice==1:
-        inps=int(raw_input("\n1.to show owner basic info\n2.to show owners posts\n3.show recent media liked by user\n"))
+        inps=int(raw_input("\n1.to show owner basic info.\n2.to show owners posts.\n3.show recent media liked by user.\nEnter:"))
         owner_obj=Owner()
         if inps==1:
             owner_obj.get_self_info()
@@ -320,7 +331,7 @@ while(True):
     elif choice==2:
         while True:
             print"please select user:"
-            select=int(raw_input("\n1.legenwait4itdary\n2.divyesh.712\n3.shiven.basnet"))
+            select=int(raw_input("\n1.legenwait4itdary\n2.shiven.basnet\nEnter:"))
             if select==1:
                 UserName="legenwait4itdary"
                 break
@@ -332,7 +343,7 @@ while(True):
         Users_obj=Users()
         ID=Users_obj.get_id(UserName)
         while True:
-            choice_1=int(raw_input("\n1.to show " +UserName+ " info\n2.to show " +UserName+  " posts\n3.to show "+UserName+ " comments on a post\n4.to like a post of "+UserName+"\n5.to comment on a post of"+UserName+"\n"))
+            choice_1=int(raw_input("\n1.to show " +UserName+ " info.\n2.to show " +UserName+  " posts.\n3.to show "+UserName+ " comments on a post.\n4.to like a post of "+UserName+"."+"\n5.to comment on a post of"+UserName+"."+"\nEnter:"))
             if choice_1==1:
                 Users_obj.show_Info(UserName)
                 break
@@ -363,3 +374,5 @@ while(True):
             ID=Users_obj.get_id(UserName)
             if ID!=None:
                 Users_obj.marketing(ID)
+            else:
+                print "user ID not Found"
